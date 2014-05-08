@@ -1,0 +1,147 @@
+# Patemeter Estimation of Hetero SNP
+
+## Goal
+
+* Estimating the randomness of the ratios of variant short reads at hetero SNP so that we
+discriminate somatic mutations from germline porimorphisms efficiently.
+
+## Method
+
+* Here, we assume that the distribution of the variant short reads follows Beta-Binomial distributions. 
+* Genotypes are determined by SNP arrays (Affimetrix Human Mapping 250K Nsp Array).
+* 13 exome sequences.
+
+## Results
+
+### Exome
+
+#### Normal
+
+```{r, echo=FALSE, message=FALSE}
+source("prep.R")
+bdata <- read.table("RCC.normal.hetero.count.exon.filt.txt", sep="\t",header=F);
+derror <- rep(0, 2 * nrow(bdata));
+for (i in 1:nrow(bdata)) {
+    derror[2 * i - 1] <- bdata[i, 7];
+    derror[2 * i] <- bdata[i, 6];
+}
+res <- constrOptim(c(20, 20), marginalLikelihood, grad=NULL, ui=matrix(c(1, 0, 1, 0, 1, 1), 3, 2), ci=c(0.1, 1, 1), data=derror);
+```
+
+parameter
+$\alpha = `r res$par[1]`, \beta = `r res$par[2]`$
+
+```{r echo=FALSE, message=FALSE}
+require(ggplot2);
+x <- seq(0, 1, len = 100);
+p <- qplot(x, geom = "blank");
+stat <- stat_function(aes(x = x, y = ..y..), fun = dbeta, colour="red", n = 100,
+                      args = list(shape1 = res$par[1], shape2 = res$par[2]))
+p + stat
+```
+
+#### Tumor
+
+```{r, echo=FALSE, message=FALSE}
+source("prep.R")
+bdata <- read.table("RCC.tumor.hetero.count.exon.filt.txt", sep="\t",header=F);
+derror <- rep(0, 2 * nrow(bdata));
+for (i in 1:nrow(bdata)) {
+    derror[2 * i - 1] <- bdata[i, 7];
+    derror[2 * i] <- bdata[i, 6];
+}
+res <- constrOptim(c(20, 20), marginalLikelihood, grad=NULL, ui=matrix(c(1, 0, 1, 0, 1, 1), 3, 2), ci=c(0.1, 1, 1), data=derror);
+```
+
+parameter
+$\alpha = `r res$par[1]`, \beta = `r res$par[2]`$
+
+```{r echo=FALSE, message=FALSE}
+require(ggplot2);
+x <- seq(0, 1, len = 100);
+p <- qplot(x, geom = "blank");
+stat <- stat_function(aes(x = x, y = ..y..), fun = dbeta, colour="red", n = 100,
+                      args = list(shape1 = res$par[1], shape2 = res$par[2]))
+p + stat
+```
+
+### Genome
+
+#### Normal
+
+```{r, echo=FALSE, message=FALSE}
+source("prep.R")
+bdata <- read.table("RCC.normal.hetero.count.genome.filt.txt", sep="\t",header=F);
+derror <- rep(0, 2 * nrow(bdata));
+for (i in 1:nrow(bdata)) {
+    derror[2 * i - 1] <- bdata[i, 7];
+    derror[2 * i] <- bdata[i, 6];
+}
+res <- constrOptim(c(20, 20), marginalLikelihood, grad=NULL, ui=matrix(c(1, 0, 1, 0, 1, 1), 3, 2), ci=c(0.1, 1, 1), data=derror);
+```
+
+parameter
+$\alpha = `r res$par[1]`, \beta = `r res$par[2]`$
+
+```{r echo=FALSE, message=FALSE}
+require(ggplot2);
+x <- seq(0, 1, len = 100);
+p <- qplot(x, geom = "blank");
+stat <- stat_function(aes(x = x, y = ..y..), fun = dbeta, colour="red", n = 100,
+                      args = list(shape1 = res$par[1], shape2 = res$par[2]))
+p + stat
+```
+
+#### Tumor
+
+```{r, echo=FALSE, message=FALSE}
+source("prep.R")
+bdata <- read.table("RCC.tumor.hetero.count.genome.filt.txt", sep="\t",header=F);
+derror <- rep(0, 2 * nrow(bdata));
+for (i in 1:nrow(bdata)) {
+    derror[2 * i - 1] <- bdata[i, 7];
+    derror[2 * i] <- bdata[i, 6];
+}
+res <- constrOptim(c(20, 20), marginalLikelihood, grad=NULL, ui=matrix(c(1, 0, 1, 0, 1, 1), 3, 2), ci=c(0.1, 1, 1), data=derror);
+```
+
+parameter
+$\alpha = `r res$par[1]`, \beta = `r res$par[2]`$
+
+```{r echo=FALSE, message=FALSE}
+require(ggplot2);
+x <- seq(0, 1, len = 100);
+p <- qplot(x, geom = "blank");
+stat <- stat_function(aes(x = x, y = ..y..), fun = dbeta, colour="red", n = 100,
+                      args = list(shape1 = res$par[1], shape2 = res$par[2]))
+p + stat
+```
+
+
+### Observation
+
+* The modes in exome data were closer to center than those in genome data.
+* The variances in genome data were larger than those in exome data.
+
+```{r, echo=FALSE, message=FALSE}
+source("prep.R")
+bdata <- read.table("RCC.normal.genome_exon.txt", sep="\t",header=F);
+derror <- rep(0, 2 * nrow(bdata));
+for (i in 1:nrow(bdata)) {
+    derror[2 * i - 1] <- bdata[i, 7];
+    derror[2 * i] <- bdata[i, 6];
+}
+res <- constrOptim(c(20, 20), marginalLikelihood, grad=NULL, ui=matrix(c(1, 0, 1, 0, 1, 1), 3, 2), ci=c(0.1, 1, 1), data=derror);
+```
+
+parameter
+$\alpha = `r res$par[1]`, \beta = `r res$par[2]`$
+
+```{r echo=FALSE, message=FALSE}
+require(ggplot2);
+x <- seq(0, 1, len = 100);
+p <- qplot(x, geom = "blank");
+stat <- stat_function(aes(x = x, y = ..y..), fun = dbeta, colour="red", n = 100,
+                      args = list(shape1 = res$par[1], shape2 = res$par[2]))
+p + stat
+```
